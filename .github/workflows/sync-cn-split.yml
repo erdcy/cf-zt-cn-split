@@ -11,25 +11,19 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      # 1. 升级 checkout 组件到最新的 v4 稳定版或 v5（修复 Node 24 兼容性）
+      # 使用轻量化拉取，避免触发 Node 警告
       - uses: actions/checkout@v4
         with:
           sparse-checkout: .
 
-      # 2. 升级设置 Python 组件到最新版
-      - name: 设置 Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-          update-environment: true
-
-      - name: 安装依赖
-        run: pip install requests
-
-      - name: 运行同步脚本
+      # 不再使用 setup-python 组件，直接用 Ubuntu 自带的 Python3 
+      - name: 准备运行环境并执行同步
         env:
           CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           CF_PROFILE_ID: ${{ secrets.CF_PROFILE_ID }}
-          MODE: exclude                     # 可改成 include
-        run: python cf-zt-cn-split.py
+          MODE: exclude
+        run: |
+          python3 -m pip install --upgrade pip
+          pip3 install requests
+          python3 cf-zt-cn-split.py

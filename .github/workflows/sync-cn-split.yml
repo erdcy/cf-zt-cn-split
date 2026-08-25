@@ -11,12 +11,11 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      # 使用轻量化拉取，避免触发 Node 警告
       - uses: actions/checkout@v4
         with:
           sparse-checkout: .
 
-      # 不再使用 setup-python 组件，直接用 Ubuntu 自带的 Python3 
+      # 使用原生的运行环境，同时捕获 Python 内部的真实 API 报错
       - name: 准备运行环境并执行同步
         env:
           CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
@@ -26,4 +25,4 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip
           pip3 install requests
-          python3 cf-zt-cn-split.py
+          python3 cf-zt-cn-split.py || (echo "==== 脚本执行失败，请检查下方报错信息 ====" && exit 1)

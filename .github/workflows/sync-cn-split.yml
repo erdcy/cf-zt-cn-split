@@ -11,11 +11,11 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      # 将原先的 v4 修改为官方最新支持 Node 24+ 的 v4.2.2（或直接用 v4 最新小版本，GitHub 会自动对齐内部运行时）
+      - uses: actions/checkout@v4.2.2
         with:
           sparse-checkout: .
 
-      # 使用原生的运行环境，同时捕获 Python 内部的真实 API 报错
       - name: 准备运行环境并执行同步
         env:
           CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
@@ -25,4 +25,4 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip
           pip3 install requests
-          python3 cf-zt-cn-split.py || (echo "==== 脚本执行失败，请检查下方报错信息 ====" && exit 1)
+          python3 cf-zt-cn-split.py

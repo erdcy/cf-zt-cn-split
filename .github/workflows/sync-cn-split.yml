@@ -6,18 +6,22 @@ on:
   schedule:
     - cron: '0 3 * * 0'  # 每周日北京时间11:00（UTC 3:00）
   workflow_dispatch:         # 手动触发按钮
-env:
-  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: 'true'
+
 jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
+      # 1. 升级 checkout 组件到最新的 v4 稳定版或 v5（修复 Node 24 兼容性）
       - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .
 
+      # 2. 升级设置 Python 组件到最新版
       - name: 设置 Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          update-environment: true
 
       - name: 安装依赖
         run: pip install requests
